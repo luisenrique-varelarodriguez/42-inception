@@ -1,0 +1,22 @@
+version: '3.8'
+services:
+  # nginx:
+  #   container_name: nginx
+  #   build: ./requirements/nginx/.
+  #   ports:
+  #     - "443:443"
+  #   networks:
+  #     - inception
+  #   restart: always
+  mariadb:
+    container_name: mariadb
+    build: ./requirements/mariadb/.
+    networks:
+      - inception
+    restart: always
+  # wordpress:
+  #   container_name: wordpress
+  #   build: ./requirements/wordpress/.
+  #   networks:
+  #     - inception
+  #   restart: always
