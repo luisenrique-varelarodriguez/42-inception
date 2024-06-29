@@ -1,9 +1,15 @@
-FROM debian:buster
+FROM debian:bullseye-slim
 
-RUN apt -y update && \
-	apt install -y enginx openssl
+RUN apt-get -y update && \
+	apt-get install -y	nginx=1.18.0-6.1+deb11u3 \
+						openssl=1.1.1n-0+deb11u5 && \
+						apt-get clean && rm -rf /var/lib/apt/lists/*
+
+EXPOSE 443
 
 COPY ./tools/script.sh /
-COPY nginx.conf /etc/nginx/nginx.conf
+COPY ./conf/default.conf /
 
-CMD [ "/script.sh" ]
+RUN chmod +x script.sh
+
+ENTRYPOINT [ "/bin/sh", "script.sh" ]
