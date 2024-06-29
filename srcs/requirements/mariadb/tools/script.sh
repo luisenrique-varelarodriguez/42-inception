@@ -1,16 +1,16 @@
 #!/bin/bash
 
-# Inicia el servidor MariaDB en segundo plano
+# Starts the MariaDB server in the background
 mysqld_safe --datadir='/var/lib/mysql' &
 
-# Espera a que MariaDB esté completamente iniciado
+# Waits for MariaDB to be fully started
 echo "Waiting for MariaDB to start..."
 until mysqladmin ping &>/dev/null; do
   sleep 5
 done
 echo "MariaDB is up and running."
 
-# Ejecuta el script de configuración segura de MariaDB
+# Runs the MariaDB secure installation script
 mysql_secure_installation <<EOF
 Y
 $MYSQL_ROOT_PASSWORD
@@ -21,16 +21,16 @@ Y
 Y
 EOF
 
-# Ejecuta comandos SQL para crear la base de datos y el usuario
+# Runs SQL commands to create the database and user
 mysql <<EOF
 CREATE DATABASE IF NOT EXISTS $MYSQL_DATABASE;
-CREATE USER IF NOT EXISTS '$MYSQL_USER'@'%' IDENTIFIED BY '$MYSQL_USER_PASSWORD';
+CREATE USER IF NOT EXISTS '$MYSQL_USER'@'%' IDENTIFIED BY '$MYSQL_PASSWORD';
 GRANT ALL PRIVILEGES ON $MYSQL_DATABASE.* TO '$MYSQL_USER'@'%';
 FLUSH PRIVILEGES;
 EOF
 
-# Detener el servidor MariaDB temporalmente
+# Temporarily stops the MariaDB server
 mysqladmin shutdown
 
-# Inicia el servidor MariaDB en primer plano
+# Starts the MariaDB server in the foreground
 exec mysqld_safe --datadir='/var/lib/mysql'

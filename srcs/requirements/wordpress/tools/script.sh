@@ -24,7 +24,7 @@ sleep 5
 
 # Check if wp-config.php file exists and create it if necessary
 if [ ! -f wp-config.php ]; then
-    wp config create --dbname=$MYSQL_DATABASE --dbuser=$MYSQL_USER --dbpass=$MYSQL_USER_PASSWORD --dbhost=$DB_HOST --allow-root
+    wp config create --dbname=$MYSQL_DATABASE --dbuser=$MYSQL_USER --dbpass=$MYSQL_PASSWORD --dbhost=$DB_HOST --allow-root
 
     # Wait for wp-config.php to be available
     while [ ! -f $WP_CONFIG_FILE ]; do

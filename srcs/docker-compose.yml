@@ -6,8 +6,11 @@ services:
       - inception
     volumes:
       - mariadb:/var/lib/mysql
-    env_file:
-      - .env
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
     restart: always
 
   wordpress:
@@ -19,8 +22,16 @@ services:
       - inception
     volumes:
       - wordpress:/var/www/html
-    env_file:
-      - .env
+    environment:
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - DB_HOST=mariadb
+      - DOMAIN_NAME=${DOMAIN_NAME}
+      - PROJECT=${PROJECT}
+      - WP_ADMIN_USER=${WP_ADMIN_USER}
+      - WP_ADMIN_PASS=${WP_ADMIN_PASS}
+      - LOGIN=${LOGIN}
     restart: always
 
   nginx:
@@ -35,8 +46,8 @@ services:
     volumes:
       - wordpress:/var/www/html
       - ./srcs/requirements/ssl:/etc/ssl/nginx
-    env_file:
-      - .env
+    environment:
+      - DOMAIN_NAME=${DOMAIN_NAME}
     restart: always
 
 volumes:
