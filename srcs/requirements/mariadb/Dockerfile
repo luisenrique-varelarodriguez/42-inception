@@ -1,8 +1,8 @@
 FROM debian:bullseye-slim
 
 RUN apt-get -y update && \
-	apt-get install -y	mariadb-server=1:10.5.23-0+deb11u1 && \
-	apt-get clean && rm -rf /var/lib/apt/lists/*
+	apt-get install -y	mariadb-server && \
+	apt-get clean
 
 EXPOSE 3306
 

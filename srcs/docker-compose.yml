@@ -1,5 +1,3 @@
-version: '3'
-
 services:
   mariadb:
     container_name: mariadb
@@ -36,26 +34,25 @@ services:
       - inception
     volumes:
       - wordpress:/var/www/html
+      - ./srcs/requirements/ssl:/etc/ssl/nginx
     env_file:
       - .env
     restart: always
 
 volumes:
   mariadb:
-    name: mariadb
     driver: local
     driver_opts:
       type: none
       o: bind
-      device: /Users/enrique/Desktop/MyGithub/Inception/data/mariadb
+      device: ./data/mariadb
 
   wordpress:
-    name: wordpress
     driver: local
     driver_opts:
       type: none
       o: bind
-      device: /Users/enrique/Desktop/MyGithub/Inception/data/wordpress
+      device: ./data/wordpress
 
 networks:
   inception:

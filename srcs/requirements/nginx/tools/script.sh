@@ -7,13 +7,13 @@ CERT_NAME="sscert.crt"
 KEY_NAME="sskey.key"
 SUBJECT="/C=ES/ST=Madrid/L=Madrid/CN=$DOMAIN_NAME"
 
-# Creates directories if they don't exists
-mkdir -p $CERT_DIR
-
 # Check if the certificate and key already exist
 if [ -f "$CERT_DIR/$CERT_NAME" ] && [ -f "$CERT_DIR/$KEY_NAME" ]; then
     echo "Certificate and private key already exist. Skipping generation."
 else
+    # Creates directorie for ssl certs if they don't exists
+    mkdir -p $CERT_DIR
+
     # Generates the certificate and the private key
     openssl req -x509 -nodes -days $DAYS_VALID -newkey rsa:2048 -keyout $CERT_DIR/$KEY_NAME -out $CERT_DIR/$CERT_NAME -subj "$SUBJECT"
 
