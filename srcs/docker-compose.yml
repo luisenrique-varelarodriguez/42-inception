@@ -34,7 +34,7 @@ services:
       - inception
     volumes:
       - wordpress:/var/www/html
-      - ./ssl:/etc/ssl/nginx  # Montar el directorio de certificados SSL
+      - ./ssl:/etc/ssl/nginx
     env_file:
       - .env
     restart: always

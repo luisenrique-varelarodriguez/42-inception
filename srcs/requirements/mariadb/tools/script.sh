@@ -1,7 +1,10 @@
 #!/bin/bash
 
+# Variables
+DATA_DIR=/var/lib/mysql
+
 # Starts the MariaDB server in the background
-mysqld_safe --datadir='/var/lib/mysql' &
+mysqld_safe --datadir=$DATA_DIR &
 
 # Waits for MariaDB to be fully started
 echo "Waiting for MariaDB to start..."
@@ -34,4 +37,4 @@ EOF
 mysqladmin shutdown
 
 # Starts the MariaDB server in the foreground
-exec mysqld_safe --datadir='/var/lib/mysql'
+exec mysqld_safe --datadir=$DATA_DIR
