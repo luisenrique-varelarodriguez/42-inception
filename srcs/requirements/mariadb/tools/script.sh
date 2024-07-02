@@ -12,6 +12,7 @@ echo "MariaDB is up and running."
 
 # Runs the MariaDB secure installation script
 mysql_secure_installation <<EOF
+
 Y
 $MYSQL_ROOT_PASSWORD
 $MYSQL_ROOT_PASSWORD
@@ -24,7 +25,7 @@ EOF
 # Runs SQL commands to create the database and user
 mysql <<EOF
 CREATE DATABASE IF NOT EXISTS $MYSQL_DATABASE;
-CREATE USER IF NOT EXISTS '$MYSQL_USER'@'%' IDENTIFIED BY '$MYSQL_PASSWORD';
+CREATE USER IF NOT EXISTS '$MYSQL_USER'@'%' IDENTIFIED BY '$MYSQL_USER_PASSWORD';
 GRANT ALL PRIVILEGES ON $MYSQL_DATABASE.* TO '$MYSQL_USER'@'%';
 FLUSH PRIVILEGES;
 EOF

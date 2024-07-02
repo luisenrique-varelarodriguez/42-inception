@@ -6,11 +6,8 @@ services:
       - inception
     volumes:
       - mariadb:/var/lib/mysql
-    environment:
-      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
-      - MYSQL_USER=${MYSQL_USER}
-      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
-      - MYSQL_DATABASE=${MYSQL_DATABASE}
+    env_file:
+      - .env
     restart: always
 
   wordpress:
@@ -22,16 +19,8 @@ services:
       - inception
     volumes:
       - wordpress:/var/www/html
-    environment:
-      - MYSQL_DATABASE=${MYSQL_DATABASE}
-      - MYSQL_USER=${MYSQL_USER}
-      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
-      - DB_HOST=mariadb
-      - DOMAIN_NAME=${DOMAIN_NAME}
-      - PROJECT=${PROJECT}
-      - WP_ADMIN_USER=${WP_ADMIN_USER}
-      - WP_ADMIN_PASS=${WP_ADMIN_PASS}
-      - LOGIN=${LOGIN}
+    env_file:
+      - .env
     restart: always
 
   nginx:
@@ -45,9 +34,9 @@ services:
       - inception
     volumes:
       - wordpress:/var/www/html
-      - ./srcs/requirements/ssl:/etc/ssl/nginx
-    environment:
-      - DOMAIN_NAME=${DOMAIN_NAME}
+      - ./ssl:/etc/ssl/nginx  # Montar el directorio de certificados SSL
+    env_file:
+      - .env
     restart: always
 
 volumes:
