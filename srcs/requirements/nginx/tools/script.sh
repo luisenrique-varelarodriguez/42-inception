@@ -31,8 +31,6 @@ fi
 # Move the default.conf file to the correct location
 if [ -f "/default.conf" ]; then
     mv /default.conf /etc/nginx/conf.d/default.conf
-else
-    continue
 fi
 
 exec nginx -g "daemon off;"
