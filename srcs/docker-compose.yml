@@ -41,19 +41,18 @@ services:
 
 volumes:
   mariadb:
-    driver: local
-    driver_opts:
-      type: none
-      o: bind
-      device: /home/lvarela/data/mariadb
+    # driver: local
+    # driver_opts:
+    #   type: none
+    #   o: bind
+    #   device: /home/lvarela/data/mariadb
 
   wordpress:
-    driver: local
-    driver_opts:
-      type: none
-      o: bind
-      device: /home/lvarela/data/wordpress
-
+    # driver: local
+    # driver_opts:
+    #   type: none
+    #   o: bind
+    #   device: /home/lvarela/data/wordpress
 networks:
   inception:
     name: inception

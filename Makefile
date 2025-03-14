@@ -2,19 +2,19 @@ all : up
 
 # Start the Docker Compose services
 up : 
-	docker-compose -f ./srcs/docker-compose.yml up -d --build
+	docker compose -f ./srcs/docker-compose.yml up -d --build
 
 # Down the Docker Compose services
 down : 
-	docker-compose -f ./srcs/docker-compose.yml down
+	docker compose -f ./srcs/docker-compose.yml down
 
 # Stop the Docker Compose services
 stop : 
-	docker-compose -f ./srcs/docker-compose.yml stop
+	docker compose -f ./srcs/docker-compose.yml stop
 
 # Restart the Docker Compose services
 restart : 
-	docker-compose -f ./srcs/docker-compose.yml restart
+	docker compose -f ./srcs/docker-compose.yml restart
 
 # Destroy the Docker Compose services
 destroy:
