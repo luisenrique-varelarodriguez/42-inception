@@ -1,15 +1,24 @@
 FROM debian:bullseye-slim
 
-RUN apt-get -y update && \
-    apt-get install -y  php-fpm \
-                        php-mysql \
-                        curl && \
-	apt-get clean && rm -rf /var/lib/apt/lists/*
+# Install PHP-FPM and dependencies
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+        php-fpm \
+        php-mysql \
+        curl \
+        default-mysql-client \
+        ca-certificates && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-EXPOSE 8080
+# Copy scripts
+COPY ./tools/script.sh /script.sh
 
-COPY ./tools/script.sh /
+# Set permissions and create directories
+RUN chmod +x /script.sh && \
+    mkdir -p /var/www/html /run/php && \
+    chown -R www-data:www-data /var/www/html
 
-RUN chmod +x /script.sh
+EXPOSE 9000
 
 ENTRYPOINT [ "/bin/bash", "/script.sh" ]
