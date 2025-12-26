@@ -45,7 +45,6 @@ destroy:
 	-@docker rm $$(docker ps -qa) 2>/dev/null || true
 	-@docker rmi -f $$(docker images -qa) 2>/dev/null || true
 	-@docker volume rm $$(docker volume ls -q) 2>/dev/null || true
-	-rm -f $(SSL_DIR)/*.crt $(SSL_DIR)/*.key
-	@echo "✅ All Docker resources and SSL certificater network ls -q) 2>/dev/null || true
+	-@docker network rm $$(docker network ls -q) 2>/dev/null || true
 	@rm -rf $(DATA_DIR)
 	@echo "✅ All Docker resources have been removed."
