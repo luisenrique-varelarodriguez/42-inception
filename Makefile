@@ -1,27 +1,51 @@
-all : up
+# ==============================================
+# INCEPTION PROJECT - MAKEFILE
+# ==============================================
 
-# Start the Docker Compose services
-up : 
-	docker compose -f ./srcs/docker-compose.yml up -d --build
+COMPOSE_FILE = ./srcs/docker-compose.yml
+DATA_DIR = $(HOME)/data
+SSL_DIR = ./srcs/ssl
 
-# Down the Docker Compose services
-down : 
-	docker compose -f ./srcs/docker-compose.yml down
+.PHONY: all up down stop restart clean fclean destroy logs ps
 
-# Stop the Docker Compose services
-stop : 
-	docker compose -f ./srcs/docker-compose.yml stop
+all: up
 
-# Restart the Docker Compose services
-restart : 
-	docker compose -f ./srcs/docker-compose.yml restart
+up:
+	@mkdir -p $(DATA_DIR)/mariadb $(DATA_DIR)/wordpress
+	@docker compose -f $(COMPOSE_FILE) up -d --build
 
-# Destroy the Docker Compose services
+down:
+	@docker compose -f $(COMPOSE_FILE) down
+
+stop:
+	@docker compose -f $(COMPOSE_FILE) stop
+
+restart:
+	@docker compose -f $(COMPOSE_FILE) restart
+
+logs:
+	@docker compose -f $(COMPOSE_FILE) logs -f
+
+ps:
+	@docker compose -f $(COMPOSE_FILE) ps
+
+clean: down
+	@rm -rf $(DATA_DIR)/mariadb/* $(DATA_DIR)/wordpress/*
+
+fclean: down
+	@docker compose -f $(COMPOSE_FILE) down -v --rmi all
+	@rm -rf $(DATA_DIR)
+	@rm -f $(SSL_DIR)/*.crt $(SSL_DIR)/*.key
+	@echo "✅ Cleaned: containers, images, volumes, data, and SSL certificates"
+
 destroy:
-	-docker stop $$(docker ps -qa);
-	-docker rm $$(docker ps -qa);
-	-docker rmi -f $$(docker images -qa);
-	-docker volume rm $$(docker volume ls -q);
-	-docker network rm $$(docker network ls -q) 2>/dev/null;
-
-.PHONY: all up down stop restart destroy
+	@echo "⚠️  Removing ALL Docker resources in 3 seconds..."
+	@sleep 3
+	-@docker stop $$(docker ps -qa) 2>/dev/null || true
+	-@docker rm $$(docker ps -qa) 2>/dev/null || true
+	-@docker rmi -f $$(docker images -qa) 2>/dev/null || true
+	-@docker volume rm $$(docker volume ls -q) 2>/dev/null || true
+	-rm -f $(SSL_DIR)/*.crt $(SSL_DIR)/*.key
+	@echo "✅ All Docker resources and SSL certificater network ls -q) 2>/dev/null || true
+	@rm -rf $(DATA_DIR)
+	@echo "✅ All Docker resources have been removed."

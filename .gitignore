@@ -1,5 +1,17 @@
-# /data/mariadb/*
-# /data/wordpress/*
-# /srcs/requirements/ssl/*
-# /srcs/requirements/.env
+# Environment files (contains sensitive credentials)
+srcs/.env
+.env
+
+# Data directories
+data/
+
+# SSL certificates (auto-generated)
+srcs/ssl/*.crt
+srcs/ssl/*.key
+
+# Temporary files
 /TODO
+.DS_Store
+*.swp
+*.swo
+*~
