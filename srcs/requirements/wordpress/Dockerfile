@@ -1,10 +1,11 @@
 FROM debian:bullseye-slim
 
-# Install PHP-FPM and dependencies
+# Install PHP and necessary extensions
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
         php-fpm \
         php-mysql \
+        php-redis \
         curl \
         default-mysql-client \
         ca-certificates && \

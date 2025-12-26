@@ -65,6 +65,12 @@ else
             --allow-root 2>/dev/null || true
     fi
     
+    # Install and activate Redis Object Cache plugin
+    wp plugin install redis-cache --activate --allow-root
+    wp config set WP_REDIS_HOST redis --allow-root
+    wp config set WP_REDIS_PORT 6379 --raw --allow-root
+    wp redis enable --allow-root
+    
     touch "$MARKER"
 fi
 
