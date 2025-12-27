@@ -100,6 +100,23 @@ services:
       retries: 3
       start_period: 5s
 
+  website:
+    container_name: website
+    build:
+      context: ./requirements/bonus/website
+      dockerfile: Dockerfile
+    ports:
+      - "8081:8081"
+    networks:
+      - inception
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8081"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+
 volumes:
   mariadb:
     driver: local

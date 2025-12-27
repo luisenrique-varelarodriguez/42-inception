@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inception Static Site</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+        .container {
+            text-align: center;
+            padding: 2rem;
+            max-width: 800px;
+        }
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+        .info {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 2rem;
+            margin-top: 2rem;
+        }
+        .info h2 {
+            margin-bottom: 1rem;
+        }
+        .info ul {
+            list-style: none;
+            text-align: left;
+        }
+        .info li {
+            padding: 0.5rem;
+            margin: 0.5rem 0;
+            background: rgba(255,255,255,0.1);
+            border-radius: 5px;
+        }
+        .emoji {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="emoji">🐳</div>
+        <h1>Inception Project</h1>
+        <p>Static Website Bonus - Pure HTML, CSS & JavaScript</p>
+        
+        <div class="info">
+            <h2>About This Bonus</h2>
+            <ul>
+                <li>✅ Static HTML site served by NGINX</li>
+                <li>✅ No PHP required</li>
+                <li>✅ Lightweight and fast</li>
+                <li>✅ Running on port 8081</li>
+                <li>✅ Part of the Inception infrastructure</li>
+            </ul>
+        </div>
+        
+        <p style="margin-top: 2rem; opacity: 0.7;">
+            Made with ❤️ for 42 School
+        </p>
+    </div>
+    
+    <script>
+        // Simple animation
+        document.addEventListener('DOMContentLoaded', () => {
+            const container = document.querySelector('.container');
+            container.style.opacity = '0';
+            container.style.transform = 'translateY(20px)';
+            
+            setTimeout(() => {
+                container.style.transition = 'all 0.5s ease';
+                container.style.opacity = '1';
+                container.style.transform = 'translateY(0)';
+            }, 100);
+        });
+    </script>
+</body>
+</html>
