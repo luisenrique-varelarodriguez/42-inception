@@ -11,7 +11,7 @@ SSL_DIR = ./srcs/ssl
 all: up
 
 up:
-	@mkdir -p $(DATA_DIR)/mariadb $(DATA_DIR)/wordpress
+	@mkdir -p $(DATA_DIR)/mariadb $(DATA_DIR)/wordpress $(DATA_DIR)/portainer
 	@docker compose -f $(COMPOSE_FILE) up -d --build
 
 down:
@@ -30,7 +30,7 @@ ps:
 	@docker compose -f $(COMPOSE_FILE) ps
 
 clean: down
-	@rm -rf $(DATA_DIR)/mariadb/* $(DATA_DIR)/wordpress/*
+	@rm -rf $(DATA_DIR)/mariadb/* $(DATA_DIR)/wordpress/* $(DATA_DIR)/portainer/*
 
 fclean: down
 	@docker compose -f $(COMPOSE_FILE) down -v --rmi all

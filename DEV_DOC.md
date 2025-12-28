@@ -666,25 +666,94 @@ make ps
 
 **Healthcheck:** `redis-cli ping`
 
-### 3. Static Website - HTML/CSS/JS
+### 3. Docker Secrets - Secure Credential Management
+
+**Implementation:**
+- Secrets defined in docker-compose.yml
+- Secret files stored in `srcs/.secrets/` (gitignored)
+- Mounted in containers at `/run/secrets/`
+- Read-only mount with restricted permissions
+
+**Technical details:**
+```yaml
+# docker-compose.yml structure:
+secrets:
+  mysql_root_password:
+    file: .secrets/mysql_root_password.txt
+  # ... other secrets
+
+services:
+  mariadb:
+    secrets:
+      - mysql_root_password
+      - mysql_user_password
+```
+
+**Script implementation:**
+```bash
+# In initialization scripts:
+if [ -f /run/secrets/secret_name ]; then
+  SECRET_VALUE=$(cat /run/secrets/secret_name)
+fi
+```
+
+**Security benefits:**
+- Secrets NOT visible in `docker inspect`
+- Not in container environment variables
+- Restricted permissions (400, root only)
+- Not exposed in process listings
+- Not inherited by child processes
+
+**Secrets used:**
+- `mysql_root_password` (MariaDB)
+- `mysql_user`, `mysql_user_password` (MariaDB/WordPress)
+- `wp_admin_user`, `wp_admin_pass` (WordPress)
+- `wordpress_user`, `wordpress_user_password` (WordPress)
+- `ftp_user`, `ftp_pass` (FTP)
+
+### 4. Portainer - Docker Management Interface
 
 **Implementation:**
 - Base image: debian:bullseye-slim
-- NGINX web server
-- Pure static HTML/CSS/JS
-- Port 8081 exposed
+- Portainer CE binary downloaded from GitHub
+- Ports: 9443 (HTTPS), 8000 (edge agent)
+- Mounts Docker socket for container management
 
 **Technical details:**
 ```bash
-# Dockerfile installs: nginx, curl
-# HTML file copied to /var/www/html/index.html
-# NGINX config for static serving
-# No PHP, no backend processing
+# Dockerfile:
+# - Downloads Portainer binary from official GitHub releases
+# - Extracts and places in /opt/portainer/
+# - Creates /data directory for persistent configuration
+# - Exposes ports 9443 (web UI) and 8000 (agent tunnel)
+
+# Runs with:
+CMD ["/opt/portainer/portainer", "--bind=:9443", "--data=/data"]
 ```
 
-**Healthcheck:** `curl -f http://localhost:8081`
+**Docker socket mounting:**
+```yaml
+volumes:
+  - /var/run/docker.sock:/var/run/docker.sock  # Control Docker
+  - portainer:/data  # Persistent configuration
+```
 
-### 4. FTP Server - File Transfer
+**Features:**
+- Full Docker API access via socket
+- Container lifecycle management (start/stop/restart/remove)
+- Image management (pull/remove/build)
+- Network and volume administration
+- Real-time container logs and stats
+- Web-based terminal access to containers
+
+**Security note:** 
+- Socket access gives full Docker control
+- Portainer itself should be password-protected
+- First-time access requires admin account creation
+
+**Healthcheck:** `wget --spider http://localhost:9443`
+
+### 5. FTP Server - File Transfer
 
 **Implementation:**
 - Base image: debian:bullseye-slim
@@ -720,8 +789,10 @@ mariadb → wordpress → nginx
 Bonus:
 mariadb → adminer (for DB access)
        → redis (independent, used by WordPress)
-       → website (independent)
+       → portainer (Docker management via socket)
        → ftp (mounts WordPress volume)
+
+Docker Secrets → All services (secure credential storage)
 ```
 
 ### Port Mapping
@@ -730,7 +801,7 @@ mariadb → adminer (for DB access)
 |---------|--------------|---------------|----------|
 | nginx | 443 | 443 | HTTPS |
 | adminer | 8080 | 8080 | HTTP |
-| website | 8081 | 8081 | HTTP |
+| portainer | 9443, 8000 | 9443, 8000 | HTTPS |
 | ftp | 21, 21100-21110 | 21, 21100-21110 | FTP |
 | wordpress | 9000 | - | FastCGI |
 | mariadb | 3306 | - | MySQL |
@@ -753,14 +824,12 @@ For defense, explain why each bonus is useful:
 
 2. **Redis:** Significantly improves WordPress performance by caching database queries in RAM. Real-world production use case.
 
-3. **Static Website:** Demonstrates NGINX versatility, shows understanding of different content types, useful for landing pages, documentation.
+3. **Portainer:** Professional Docker management interface. Visual container monitoring, logs access, resource statistics. Demonstrates understanding of DevOps tools and Docker ecosystem. Essential for production environments where GUI management is needed.
 
 4. **FTP:** Allows remote file management, useful for uploading media, editing themes/plugins, traditional file transfer method still widely used.
 
-5. **Backup Service:**
-   - Automated backups with cron
-   - Backup to external storage
-   - Restore functionality
+**Additional Feature:**
+- **Docker Secrets:** Enterprise-grade security for credential management. Much more secure than environment variables. Demonstrates understanding of security best practices and Docker's secret management system. Production-ready approach to handling sensitive data.
 
 Each bonus must be justified and demonstrate value.
 

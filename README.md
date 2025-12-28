@@ -8,8 +8,6 @@ A Docker infrastructure project that sets up a complete web stack with NGINX, Wo
 
 ## 📋 Overview
 
-## 📋 Overview
-
 This project creates a small infrastructure using Docker Compose with the following services:
 
 ### Mandatory Services
@@ -22,8 +20,11 @@ This project creates a small infrastructure using Docker Compose with the follow
 
 - **Adminer** - Web-based database management tool
 - **Redis** - Object cache for WordPress acceleration
-- **Static Website** - Pure HTML/CSS/JS site
+- **Portainer** - Docker container management interface
 - **FTP Server** - File transfer for WordPress volume
+
+**Additional Feature:**
+- **Docker Secrets** - Secure credential management system
 
 Each service runs in its own container built from custom Dockerfiles using Debian Bullseye.
 
@@ -64,7 +65,7 @@ make
 - WordPress: https://your-login.42.fr
 - Admin panel: https://your-login.42.fr/wp-admin
 - Adminer: http://localhost:8080
-- Static site: http://localhost:8081
+- Portainer: https://localhost:9443
 - FTP: ftp://localhost:21
 
 ## ⚙️ Configuration
@@ -152,11 +153,6 @@ inception/
             ├── redis/
             │   ├── Dockerfile
             │   └── tools/script.sh
-            ├── website/
-            │   ├── Dockerfile
-            │   ├── conf/index.html
-            │   ├── conf/nginx.conf
-            │   └── tools/script.sh
             └── ftp/
                 ├── Dockerfile
                 └── tools/script.sh
@@ -186,13 +182,16 @@ inception/
 ```
 Port 443  → NGINX (WordPress)
 Port 8080 → Adminer (DB Management)
-Port 8081 → Static Website
+Port 9443 → Portainer (Docker Management)
 Port 21   → FTP Server → WordPress Volume
 
 WordPress ←→ Redis (Cache)
 WordPress ←→ MariaDB (Database)
 Adminer   ←→ MariaDB
 FTP       ←→ WordPress Files
+Portainer ←→ Docker Socket (manages all containers)
+
+🔐 Docker Secrets → Secure credential storage for all services
 ```
 
 ## 🎁 Bonus Services
@@ -222,10 +221,52 @@ Web-based interface for managing MariaDB. Lightweight alternative to phpMyAdmin.
 - WordPress Admin → Settings → Redis
 - Or: `docker exec redis redis-cli ping` → should return PONG
 
-### Static Website
-**Access:** http://localhost:8081
+### Docker Secrets - Secure Credential Management
+**Purpose:** Protects sensitive data (passwords, credentials) using Docker's secret management
 
-Pure HTML/CSS/JavaScript site served by NGINX. Demonstrates static content hosting without PHP.
+**Advantages over environment variables:**
+- Secrets stored in encrypted files, not in container environment
+- Not visible in `docker inspect` output
+- Not inherited by child processes
+- Restricted file permissions (400)
+- Not exposed in process memory
+
+**Implementation:**
+- Secrets defined in `docker-compose.yml`
+- Files stored in `srcs/.secrets/` (gitignored)
+- Mounted as read-only files in `/run/secrets/` inside containers
+- Scripts read from `/run/secrets/secret_name` instead of `$ENV_VAR`
+
+**Secrets used:**
+- `mysql_root_password` - MariaDB root password
+- `mysql_user`, `mysql_user_password` - WordPress database credentials
+- `wp_admin_user`, `wp_admin_pass` - WordPress admin credentials
+- `wordpress_user`, `wordpress_user_password` - Additional user credentials
+- `ftp_user`, `ftp_pass` - FTP server credentials
+
+### Portainer - Docker Management Interface
+**Access:** https://localhost:9443
+
+Web-based interface for managing Docker containers, images, networks, and volumes.
+
+**Features:**
+- Visual container management (start, stop, restart, logs)
+- Image management (pull, remove, build)
+- Network and volume administration
+- Real-time container statistics
+- User-friendly dashboard
+
+**First-time setup:**
+1. Access https://localhost:9443
+2. Create admin account on first visit
+3. Select "Local" environment
+4. Manage all Inception containers from the interface
+
+**Use cases:**
+- Monitor container health and resource usage
+- View logs without terminal commands
+- Quick container restart/stop
+- Visual network topology
 
 ### FTP Server
 **Access:** ftp://localhost:21
@@ -247,6 +288,7 @@ lftp -u ftpuser,ftppass123 localhost
 Data persists in bind mounts:
 - `~/data/mariadb` → MariaDB data
 - `~/data/wordpress` → WordPress files
+- `~/data/portainer` → Portainer configuration
 
 ### Network
 - Bridge network named `inception`

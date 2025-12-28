@@ -55,16 +55,26 @@ The infrastructure provides mandatory and bonus services:
   - Accelerates WordPress
   - Reduces database load
 
-### 6. Static Website
-- **Purpose:** HTML/CSS/JS static site
-- **Port:** 8081 (HTTP)
-- **URL:** http://localhost:8081
+### 6. Docker Secrets
+- **Purpose:** Secure credential management
+- **Location:** `/run/secrets/` in containers
 - **Features:**
-  - Pure static content
-  - No PHP required
-  - Fast and lightweight
+  - Encrypted password storage
+  - Not visible in docker inspect
+  - Restricted file permissions
+  - Better security than environment variables
 
-### 7. FTP Server
+### 7. Portainer
+- **Purpose:** Docker management interface
+- **Port:** 9443 (HTTPS)
+- **URL:** https://localhost:9443
+- **Features:**
+  - Visual container management
+  - Real-time monitoring
+  - Image and network administration
+  - Web-based dashboard
+
+### 8. FTP Server
 - **Purpose:** File transfer to WordPress
 - **Port:** 21, 21100-21110
 - **Features:**
@@ -389,7 +399,7 @@ chmod -R 755 ~/data/
 | `https://cx02923.42.fr` | Main website |
 | `https://cx02923.42.fr/wp-admin` | Admin panel |
 | `http://localhost:8080` | Adminer (database) |
-| `http://localhost:8081` | Static website |
+| `https://localhost:9443` | Portainer (Docker management) |
 | `ftp://localhost:21` | FTP server |
 
 | Location | Content |
@@ -397,6 +407,7 @@ chmod -R 755 ~/data/
 | `srcs/.env` | Configuration and credentials |
 | `~/data/wordpress/` | WordPress files |
 | `~/data/mariadb/` | Database files |
+| `~/data/portainer/` | Portainer configuration |
 
 ## 🎁 Using Bonus Services
 
@@ -439,14 +450,96 @@ docker exec redis redis-cli KEYS *
 3. View connection status and cache statistics
 4. See cache hits/misses ratio
 
-### Static Website
+### Docker Secrets - Credential Security
 
-**Access:** http://localhost:8081
+**What are Docker Secrets?**
 
-A demonstration static HTML site showing that NGINX can serve pure static content without PHP.
+Docker Secrets provide secure storage for sensitive information like passwords. Instead of storing passwords as environment variables (visible in `docker inspect`), secrets are:
+- Stored in files with restricted permissions (400)
+- Mounted as read-only in `/run/secrets/` inside containers
+- Not visible in process listings
+- Not inherited by child processes
 
-**Customization:**
-Edit `/Users/cx02923/Desktop/42/42-inception/srcs/requirements/bonus/website/conf/index.html` to customize content.
+**Secrets in use:**
+- `mysql_root_password` - MariaDB root password
+- `mysql_user_password` - WordPress database password
+- `wp_admin_pass` - WordPress admin password
+- `wordpress_user_password` - Additional user password
+- `ftp_pass` - FTP server password
+
+**Viewing secrets (from host):**
+```bash
+# Secrets are stored in srcs/.secrets/ (gitignored)
+ls -la srcs/.secrets/
+
+# View a secret
+cat srcs/.secrets/mysql_root_password.txt
+```
+
+**Viewing secrets (inside container):**
+```bash
+# Secrets are mounted in /run/secrets/
+docker exec mariadb ls -la /run/secrets/
+
+# Secrets have restricted permissions
+docker exec mariadb ls -l /run/secrets/mysql_root_password
+# Output: -r-------- 1 root root ...
+```
+
+**Why this is more secure:**
+- Environment variables appear in `docker inspect <container>`
+- Secrets do NOT appear in docker inspect
+- Environment variables can be accidentally logged
+- Secrets are only accessible to authorized processes
+
+### Portainer - Docker Management
+
+**Access:** https://localhost:9443
+
+**First-time setup:**
+1. Open browser to https://localhost:9443
+2. Accept self-signed certificate warning
+3. Create admin user and password
+4. Select "Get Started" → "Local"
+5. You'll see the Docker environment
+
+**Main features:**
+
+**Container Management:**
+- View all running containers
+- Start/stop/restart containers
+- View real-time logs
+- Execute commands in containers
+- View resource usage (CPU, memory)
+
+**Image Management:**
+- List all Docker images
+- Pull new images
+- Remove unused images
+- Build new images
+
+**Network Management:**
+- View Docker networks
+- Create/remove networks
+- Inspect network connections
+
+**Volume Management:**
+- List all volumes
+- Browse volume contents
+- Create/remove volumes
+
+**Useful operations:**
+
+```bash
+# View WordPress logs through Portainer:
+Containers → wordpress → Logs
+
+# Restart NGINX:
+Containers → nginx → Quick Actions → Restart
+
+# Check resource usage:
+Containers → View all → See CPU/Memory stats
+```
 
 ### FTP Server - File Management
 
