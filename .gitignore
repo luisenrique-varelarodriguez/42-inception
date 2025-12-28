@@ -2,6 +2,9 @@
 srcs/.env
 .env
 
+# Docker secrets (contains sensitive credentials)
+srcs/.secrets/
+
 # Data directories
 data/
 
@@ -15,3 +18,4 @@ srcs/ssl/*.key
 *.swp
 *.swo
 *~
+checklist.md

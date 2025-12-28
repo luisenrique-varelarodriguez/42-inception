@@ -1,11 +1,36 @@
 #!/bin/bash
 set -e
 
+# Read secrets from Docker secrets files
+if [ -f /run/secrets/mysql_user ]; then
+  MYSQL_USER=$(cat /run/secrets/mysql_user)
+fi
+
+if [ -f /run/secrets/mysql_user_password ]; then
+  MYSQL_USER_PASSWORD=$(cat /run/secrets/mysql_user_password)
+fi
+
+if [ -f /run/secrets/wp_admin_user ]; then
+  WP_ADMIN_USER=$(cat /run/secrets/wp_admin_user)
+fi
+
+if [ -f /run/secrets/wp_admin_pass ]; then
+  WP_ADMIN_PASS=$(cat /run/secrets/wp_admin_pass)
+fi
+
+if [ -f /run/secrets/wordpress_user ]; then
+  WORDPRESS_USER=$(cat /run/secrets/wordpress_user)
+fi
+
+if [ -f /run/secrets/wordpress_user_password ]; then
+  WORDPRESS_USER_PASSWORD=$(cat /run/secrets/wordpress_user_password)
+fi
+
 if [ -z "$MYSQL_DATABASE" ] || [ -z "$MYSQL_USER" ] || \
    [ -z "$MYSQL_USER_PASSWORD" ] || [ -z "$DB_HOST" ] || \
    [ -z "$DOMAIN_NAME" ] || [ -z "$WP_ADMIN_USER" ] || \
    [ -z "$WP_ADMIN_PASS" ]; then
-    echo "Error: Missing required environment variables"
+    echo "Error: Missing required environment variables or secrets"
     exit 1
 fi
 

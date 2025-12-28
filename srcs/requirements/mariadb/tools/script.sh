@@ -1,9 +1,22 @@
 #!/bin/bash
 set -e
 
+# Read secrets from Docker secrets files
+if [ -f /run/secrets/mysql_root_password ]; then
+  MYSQL_ROOT_PASSWORD=$(cat /run/secrets/mysql_root_password)
+fi
+
+if [ -f /run/secrets/mysql_user ]; then
+  MYSQL_USER=$(cat /run/secrets/mysql_user)
+fi
+
+if [ -f /run/secrets/mysql_user_password ]; then
+  MYSQL_USER_PASSWORD=$(cat /run/secrets/mysql_user_password)
+fi
+
 if [ -z "$MYSQL_ROOT_PASSWORD" ] || [ -z "$MYSQL_DATABASE" ] || \
    [ -z "$MYSQL_USER" ] || [ -z "$MYSQL_USER_PASSWORD" ]; then
-  echo "Error: Missing required environment variables"
+  echo "Error: Missing required environment variables or secrets"
   exit 1
 fi
 

@@ -1,6 +1,15 @@
 #!/bin/bash
 set -e
 
+# Read secrets from Docker secrets files
+if [ -f /run/secrets/ftp_user ]; then
+  FTP_USER=$(cat /run/secrets/ftp_user)
+fi
+
+if [ -f /run/secrets/ftp_pass ]; then
+  FTP_PASS=$(cat /run/secrets/ftp_pass)
+fi
+
 if [ -z "$FTP_USER" ] || [ -z "$FTP_PASS" ]; then
     echo "Error: FTP_USER and FTP_PASS must be set"
     exit 1
