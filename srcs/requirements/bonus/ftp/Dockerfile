@@ -6,6 +6,7 @@ RUN apt-get update && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
+COPY ./conf/vsftpd.conf /etc/vsftpd.conf
 COPY ./tools/script.sh /script.sh
 
 RUN chmod +x /script.sh && \
