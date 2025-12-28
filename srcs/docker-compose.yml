@@ -117,6 +117,22 @@ services:
       retries: 3
       start_period: 5s
 
+  ftp:
+    container_name: ftp
+    build:
+      context: ./requirements/bonus/ftp
+      dockerfile: Dockerfile
+    ports:
+      - "21:21"
+      - "21100-21110:21100-21110"
+    networks:
+      - inception
+    volumes:
+      - wordpress:/var/www/html
+    env_file:
+      - .env
+    restart: unless-stopped
+
 volumes:
   mariadb:
     driver: local
