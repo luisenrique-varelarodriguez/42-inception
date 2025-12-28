@@ -8,8 +8,11 @@ services:
       - inception
     volumes:
       - mariadb:/var/lib/mysql
-    env_file:
-      - .env
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_USER_PASSWORD=${MYSQL_USER_PASSWORD}
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "--silent"]
@@ -30,8 +33,19 @@ services:
       - inception
     volumes:
       - wordpress:/var/www/html
-    env_file:
-      - .env
+    environment:
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_USER_PASSWORD=${MYSQL_USER_PASSWORD}
+      - DB_HOST=${DB_HOST}
+      - DOMAIN_NAME=${DOMAIN_NAME}
+      - PROJECT=${PROJECT}
+      - WP_ADMIN_USER=${WP_ADMIN_USER}
+      - WP_ADMIN_PASS=${WP_ADMIN_PASS}
+      - LOGIN=${LOGIN}
+      - WORDPRESS_USER=${WORDPRESS_USER}
+      - WORDPRESS_USER_EMAIL=${WORDPRESS_USER_EMAIL}
+      - WORDPRESS_USER_PASSWORD=${WORDPRESS_USER_PASSWORD}
     restart: unless-stopped
     healthcheck:
       test: ["CMD-SHELL", "pidof php-fpm7.4 || exit 1"]
@@ -55,8 +69,8 @@ services:
     volumes:
       - wordpress:/var/www/html:ro
       - ./ssl:/etc/ssl/nginx
-    env_file:
-      - .env
+    environment:
+      - DOMAIN_NAME=${DOMAIN_NAME}
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "curl", "-fk", "https://localhost:443"]
@@ -129,8 +143,9 @@ services:
       - inception
     volumes:
       - wordpress:/var/www/html
-    env_file:
-      - .env
+    environment:
+      - FTP_USER=${FTP_USER}
+      - FTP_PASS=${FTP_PASS}
     restart: unless-stopped
 
 volumes:
