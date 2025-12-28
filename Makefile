@@ -12,6 +12,14 @@ all: up
 
 up:
 	@mkdir -p $(DATA_DIR)/mariadb $(DATA_DIR)/wordpress $(DATA_DIR)/portainer
+	@mkdir -p $(SSL_DIR)
+	@if [ ! -f $(SSL_DIR)/sscert.crt ] || [ ! -f $(SSL_DIR)/sskey.key ]; then \
+		echo "Generating self-signed SSL certificate..."; \
+		openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
+			-keyout $(SSL_DIR)/sskey.key \
+			-out $(SSL_DIR)/sscert.crt \
+			-subj "/C=ES/ST=Madrid/L=Madrid/CN=$${DOMAIN_NAME:-localhost}"; \
+	fi
 	@docker compose -f $(COMPOSE_FILE) up -d --build
 
 down:
@@ -35,12 +43,10 @@ clean: down
 fclean: down
 	@docker compose -f $(COMPOSE_FILE) down -v --rmi all
 	@rm -rf $(DATA_DIR)
-	@rm -f $(SSL_DIR)/*.crt $(SSL_DIR)/*.key
-	@echo "✅ Cleaned: containers, images, volumes, data, and SSL certificates"
+	@echo "✅ Cleaned: containers, images and data"
 
 destroy:
-	@echo "⚠️  Removing ALL Docker resources in 3 seconds..."
-	@sleep 3
+	@echo "⚠️  Removing ALL Docker resources..."
 	-@docker stop $$(docker ps -qa) 2>/dev/null || true
 	-@docker rm $$(docker ps -qa) 2>/dev/null || true
 	-@docker rmi -f $$(docker images -qa) 2>/dev/null || true
