@@ -8,11 +8,22 @@ A Docker infrastructure project that sets up a complete web stack with NGINX, Wo
 
 ## 📋 Overview
 
+## 📋 Overview
+
 This project creates a small infrastructure using Docker Compose with the following services:
+
+### Mandatory Services
 
 - **NGINX** - Web server with TLSv1.2/TLSv1.3 support
 - **WordPress** - CMS with PHP-FPM 7.4
 - **MariaDB** - Database server
+
+### Bonus Services
+
+- **Adminer** - Web-based database management tool
+- **Redis** - Object cache for WordPress acceleration
+- **Static Website** - Pure HTML/CSS/JS site
+- **FTP Server** - File transfer for WordPress volume
 
 Each service runs in its own container built from custom Dockerfiles using Debian Bullseye.
 
@@ -52,6 +63,9 @@ make
 5. **Access the site**
 - WordPress: https://your-login.42.fr
 - Admin panel: https://your-login.42.fr/wp-admin
+- Adminer: http://localhost:8080
+- Static site: http://localhost:8081
+- FTP: ftp://localhost:21
 
 ## ⚙️ Configuration
 
@@ -112,10 +126,13 @@ docker compose -f srcs/docker-compose.yml logs -f
 inception/
 ├── Makefile
 ├── README.md
+├── USER_DOC.md
+├── DEV_DOC.md
+├── DEFENSE_CHECKLIST.md
 └── srcs/
     ├── docker-compose.yml
     ├── .env.example
-    ├── ssl/                     # Generated SSL certificates
+    ├── ssl/
     └── requirements/
         ├── mariadb/
         │   ├── Dockerfile
@@ -125,13 +142,29 @@ inception/
         │   ├── Dockerfile
         │   ├── conf/default.conf
         │   └── tools/script.sh
-        └── wordpress/
-            ├── Dockerfile
-            └── tools/script.sh
+        ├── wordpress/
+        │   ├── Dockerfile
+        │   └── tools/script.sh
+        └── bonus/
+            ├── adminer/
+            │   ├── Dockerfile
+            │   └── tools/script.sh
+            ├── redis/
+            │   ├── Dockerfile
+            │   └── tools/script.sh
+            ├── website/
+            │   ├── Dockerfile
+            │   ├── conf/index.html
+            │   ├── conf/nginx.conf
+            │   └── tools/script.sh
+            └── ftp/
+                ├── Dockerfile
+                └── tools/script.sh
 ```
 
 ## 🏗️ Architecture
 
+### Mandatory Services
 ```
 ┌─────────────────────┐
 │       NGINX         │  Port: 443 (TLS)
@@ -147,6 +180,65 @@ inception/
 │      MariaDB        │  Port: 3306
 │     (Database)      │
 └─────────────────────┘
+```
+
+### Complete Architecture with Bonus
+```
+Port 443  → NGINX (WordPress)
+Port 8080 → Adminer (DB Management)
+Port 8081 → Static Website
+Port 21   → FTP Server → WordPress Volume
+
+WordPress ←→ Redis (Cache)
+WordPress ←→ MariaDB (Database)
+Adminer   ←→ MariaDB
+FTP       ←→ WordPress Files
+```
+
+## 🎁 Bonus Services
+
+### Adminer - Database Management
+**Access:** http://localhost:8080
+
+Web-based interface for managing MariaDB. Lightweight alternative to phpMyAdmin.
+
+**Features:**
+- View and edit database tables
+- Execute SQL queries
+- Import/export data
+- User-friendly interface
+
+**Login credentials:** Use your MariaDB credentials from `.env`
+
+### Redis - Object Cache
+**Purpose:** Accelerates WordPress by caching database queries in memory
+
+**Benefits:**
+- Faster page load times
+- Reduced database load
+- Improved scalability
+
+**Verification:**
+- WordPress Admin → Settings → Redis
+- Or: `docker exec redis redis-cli ping` → should return PONG
+
+### Static Website
+**Access:** http://localhost:8081
+
+Pure HTML/CSS/JavaScript site served by NGINX. Demonstrates static content hosting without PHP.
+
+### FTP Server
+**Access:** ftp://localhost:21
+
+Allows file transfer to/from WordPress volume.
+
+**Credentials:** See `FTP_USER` and `FTP_PASS` in `.env`
+
+**Usage:**
+```bash
+ftp localhost
+# Or with lftp:
+lftp -u ftpuser,ftppass123 localhost
 ```
 
 ## 🔍 Technical Details

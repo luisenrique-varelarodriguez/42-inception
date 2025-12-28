@@ -625,29 +625,137 @@ make ps
 - ✅ Makefile at root
 - ✅ All files in srcs/ folder
 
-## 🎯 Bonus Ideas
+## � Implemented Bonus Services
 
-If the mandatory part is perfect, consider implementing:
+### 1. Adminer - Database Management
 
-1. **Redis Cache:**
-   - Speed up WordPress with object caching
-   - Add Redis container
-   - Configure WordPress Redis plugin
+**Implementation:**
+- Base image: debian:bullseye-slim
+- Single PHP file downloaded from adminer.org
+- PHP built-in server (no Apache/NGINX needed)
+- Port 8080 exposed
 
-2. **FTP Server:**
-   - Allow file uploads via FTP
-   - Add vsftpd container
-   - Mount WordPress volume
+**Technical details:**
+```bash
+# Dockerfile installs: php-fpm, php-mysqli, curl, ca-certificates
+# Script downloads adminer.org/latest.php
+# Runs: php -S 0.0.0.0:8080
+```
 
-3. **Static Website:**
-   - Showcase a static HTML site
-   - Use NGINX to serve
-   - No PHP required
+**Healthcheck:** `curl -f http://localhost:8080`
 
-4. **Adminer:**
-   - Web-based database management
-   - Lightweight alternative to phpMyAdmin
-   - Single PHP file
+### 2. Redis Cache - Object Cache
+
+**Implementation:**
+- Base image: debian:bullseye-slim
+- Redis server package
+- Port 6379 (internal only, not exposed)
+- WordPress plugin: redis-cache
+
+**Technical details:**
+```bash
+# Dockerfile installs: redis-server
+# Script runs: redis-server --bind 0.0.0.0 --protected-mode no
+# WordPress installs plugin and configures via WP-CLI
+```
+
+**WordPress integration:**
+- Plugin installed automatically in WordPress script
+- Config set: WP_REDIS_HOST=redis, WP_REDIS_PORT=6379
+- Enabled with: wp redis enable
+
+**Healthcheck:** `redis-cli ping`
+
+### 3. Static Website - HTML/CSS/JS
+
+**Implementation:**
+- Base image: debian:bullseye-slim
+- NGINX web server
+- Pure static HTML/CSS/JS
+- Port 8081 exposed
+
+**Technical details:**
+```bash
+# Dockerfile installs: nginx, curl
+# HTML file copied to /var/www/html/index.html
+# NGINX config for static serving
+# No PHP, no backend processing
+```
+
+**Healthcheck:** `curl -f http://localhost:8081`
+
+### 4. FTP Server - File Transfer
+
+**Implementation:**
+- Base image: debian:bullseye-slim
+- vsftpd (Very Secure FTP Daemon)
+- Ports: 21 (control), 21100-21110 (passive data)
+- Mounts WordPress volume
+
+**Technical details:**
+```bash
+# Dockerfile installs: vsftpd
+# Script creates FTP user dynamically
+# Configures vsftpd for passive mode
+# Chroot users to /var/www/html
+# Allows writeable chroot
+```
+
+**Security configuration:**
+- Anonymous access disabled
+- Local users only
+- Chroot jail enabled
+- Passive mode for firewalls
+
+**Healthcheck:** None (FTP doesn't support HTTP checks)
+
+## 🏗️ Bonus Architecture Details
+
+### Service Dependencies
+
+```
+Mandatory:
+mariadb → wordpress → nginx
+
+Bonus:
+mariadb → adminer (for DB access)
+       → redis (independent, used by WordPress)
+       → website (independent)
+       → ftp (mounts WordPress volume)
+```
+
+### Port Mapping
+
+| Service | Internal Port | External Port | Protocol |
+|---------|--------------|---------------|----------|
+| nginx | 443 | 443 | HTTPS |
+| adminer | 8080 | 8080 | HTTP |
+| website | 8081 | 8081 | HTTP |
+| ftp | 21, 21100-21110 | 21, 21100-21110 | FTP |
+| wordpress | 9000 | - | FastCGI |
+| mariadb | 3306 | - | MySQL |
+| redis | 6379 | - | Redis |
+
+### Volume Sharing
+
+```
+WordPress Volume (/var/www/html):
+- Mounted by: wordpress (rw)
+- Mounted by: nginx (ro)
+- Mounted by: ftp (rw)
+```
+
+## 🎯 Bonus Justification
+
+For defense, explain why each bonus is useful:
+
+1. **Adminer:** Simplifies database management, useful for debugging, viewing data structure, running queries without terminal access.
+
+2. **Redis:** Significantly improves WordPress performance by caching database queries in RAM. Real-world production use case.
+
+3. **Static Website:** Demonstrates NGINX versatility, shows understanding of different content types, useful for landing pages, documentation.
+
+4. **FTP:** Allows remote file management, useful for uploading media, editing themes/plugins, traditional file transfer method still widely used.
 
 5. **Backup Service:**
    - Automated backups with cron

@@ -4,7 +4,9 @@ This document explains how to use the Inception project from an end-user perspec
 
 ## 📦 Provided Services
 
-The infrastructure provides three interconnected services:
+The infrastructure provides mandatory and bonus services:
+
+### Mandatory Services
 
 ### 1. NGINX Web Server
 - **Purpose:** Web server and reverse proxy
@@ -22,6 +24,7 @@ The infrastructure provides three interconnected services:
   - Two user accounts (admin + author)
   - Automated setup and configuration
   - Persistent data storage
+  - Redis object caching enabled
 
 ### 3. MariaDB Database
 - **Purpose:** Relational database
@@ -31,6 +34,43 @@ The infrastructure provides three interconnected services:
   - Automated initialization
   - Persistent data storage
   - Secure user configuration
+
+### Bonus Services
+
+### 4. Adminer
+- **Purpose:** Database management tool
+- **Port:** 8080 (HTTP)
+- **URL:** http://localhost:8080
+- **Features:**
+  - Web interface for MariaDB
+  - Execute SQL queries
+  - Import/export data
+  - View and edit tables
+
+### 5. Redis Cache
+- **Purpose:** Object cache for WordPress
+- **Port:** 6379 (internal)
+- **Features:**
+  - In-memory caching
+  - Accelerates WordPress
+  - Reduces database load
+
+### 6. Static Website
+- **Purpose:** HTML/CSS/JS static site
+- **Port:** 8081 (HTTP)
+- **URL:** http://localhost:8081
+- **Features:**
+  - Pure static content
+  - No PHP required
+  - Fast and lightweight
+
+### 7. FTP Server
+- **Purpose:** File transfer to WordPress
+- **Port:** 21, 21100-21110
+- **Features:**
+  - Upload/download WordPress files
+  - Direct volume access
+  - Secure authentication
 
 ## 🚀 Starting the Project
 
@@ -348,12 +388,110 @@ chmod -R 755 ~/data/
 |-----|---------|
 | `https://cx02923.42.fr` | Main website |
 | `https://cx02923.42.fr/wp-admin` | Admin panel |
+| `http://localhost:8080` | Adminer (database) |
+| `http://localhost:8081` | Static website |
+| `ftp://localhost:21` | FTP server |
 
 | Location | Content |
 |----------|---------|
 | `srcs/.env` | Configuration and credentials |
 | `~/data/wordpress/` | WordPress files |
 | `~/data/mariadb/` | Database files |
+
+## 🎁 Using Bonus Services
+
+### Adminer - Database Management
+
+**Access:** http://localhost:8080
+
+**Login:**
+- System: MySQL
+- Server: mariadb
+- Username: (your `MYSQL_USER`)
+- Password: (your `MYSQL_USER_PASSWORD`)
+- Database: (your `MYSQL_DATABASE`)
+
+**What you can do:**
+- Browse all database tables
+- Execute SQL queries directly
+- View WordPress data structure
+- Export database backups
+- Import data
+
+### Redis Cache - Performance Monitoring
+
+**Check Redis status:**
+```bash
+# Verify Redis is running
+docker exec redis redis-cli ping
+# Should return: PONG
+
+# View cache statistics
+docker exec redis redis-cli INFO stats
+
+# See cached keys
+docker exec redis redis-cli KEYS *
+```
+
+**In WordPress:**
+1. Go to WordPress Admin
+2. Settings → Redis
+3. View connection status and cache statistics
+4. See cache hits/misses ratio
+
+### Static Website
+
+**Access:** http://localhost:8081
+
+A demonstration static HTML site showing that NGINX can serve pure static content without PHP.
+
+**Customization:**
+Edit `/Users/cx02923/Desktop/42/42-inception/srcs/requirements/bonus/website/conf/index.html` to customize content.
+
+### FTP Server - File Management
+
+**Connect with terminal:**
+```bash
+# Basic FTP
+ftp localhost
+# Username: ftpuser (or your FTP_USER)
+# Password: ftppass123 (or your FTP_PASS)
+
+# Or with lftp (better)
+lftp -u ftpuser,ftppass123 localhost
+ls
+cd wp-content/uploads
+put myfile.jpg
+get existingfile.jpg
+quit
+```
+
+**Connect with FileZilla:**
+1. Open FileZilla
+2. Host: localhost
+3. Username: (your `FTP_USER`)
+4. Password: (your `FTP_PASS`)
+5. Port: 21
+6. Connect
+
+**What you can do:**
+- Upload media files to WordPress
+- Download backups
+- Edit theme files (be careful!)
+- Manage plugins
+- Access all WordPress directories
+
+**FTP Directory Structure:**
+```
+/ (WordPress root)
+├── wp-admin/
+├── wp-content/
+│   ├── themes/
+│   ├── plugins/
+│   └── uploads/
+├── wp-includes/
+└── wp-config.php
+```
 
 ## 💡 Tips
 
