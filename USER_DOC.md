@@ -90,9 +90,9 @@ The infrastructure provides mandatory and bonus services:
    ```bash
    sudo vim /etc/hosts
    ```
-   Add this line (replace `cx02923` with your 42 login):
+   Add this line (replace `lvarela` with your 42 login):
    ```
-   127.0.0.1 cx02923.42.fr
+   127.0.0.1 lvarela.42.fr
    ```
 
 2. **Configure environment variables:**
@@ -144,16 +144,16 @@ This simply stops the containers without removing them.
 ### Main Website
 Open your browser and navigate to:
 ```
-https://cx02923.42.fr
+https://lvarela.42.fr
 ```
-(Replace `cx02923` with your login)
+(Replace `lvarela` with your login)
 
 **Note:** You'll see a security warning because the SSL certificate is self-signed. This is expected. Click "Advanced" → "Proceed to site" (or equivalent in your browser).
 
 ### WordPress Admin Panel
 Access the administration interface at:
 ```
-https://cx02923.42.fr/wp-admin
+https://lvarela.42.fr/wp-admin
 ```
 
 Log in with the credentials you set in `.env`:
@@ -396,8 +396,8 @@ chmod -R 755 ~/data/
 
 | URL | Purpose |
 |-----|---------|
-| `https://cx02923.42.fr` | Main website |
-| `https://cx02923.42.fr/wp-admin` | Admin panel |
+| `https://lvarela.42.fr` | Main website |
+| `https://lvarela.42.fr/wp-admin` | Admin panel |
 | `http://localhost:8080` | Adminer (database) |
 | `https://localhost:9443` | Portainer (Docker management) |
 | `ftp://localhost:21` | FTP server |

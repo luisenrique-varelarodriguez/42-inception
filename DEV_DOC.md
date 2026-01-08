@@ -34,7 +34,7 @@ make --version
    ```
 
 3. **Configure mandatory variables:**
-   - `DOMAIN_NAME`: Your login.42.fr (e.g., `cx02923.42.fr`)
+   - `DOMAIN_NAME`: Your login.42.fr (e.g., `lvarela.42.fr`)
    - `LOGIN`: Your 42 login
    - `WP_ADMIN_USER`: Admin username (NOT "admin" or "administrator")
    - All passwords (use secure values)
