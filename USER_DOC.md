@@ -88,7 +88,7 @@ The infrastructure provides mandatory and bonus services:
 
 1. **Configure your domain:**
    ```bash
-   sudo nano /etc/hosts
+   sudo vim /etc/hosts
    ```
    Add this line (replace `cx02923` with your 42 login):
    ```
@@ -97,7 +97,7 @@ The infrastructure provides mandatory and bonus services:
 
 2. **Configure environment variables:**
    ```bash
-   nano srcs/.env
+   vim srcs/.env
    ```
    Update at least:
    - `DOMAIN_NAME` (your-login.42.fr)
@@ -205,7 +205,7 @@ All credentials are in `srcs/.env`. This file is **not** committed to Git.
 
 3. Edit credentials:
    ```bash
-   nano srcs/.env
+   vim srcs/.env
    ```
 
 4. Restart:

@@ -47,12 +47,12 @@ cd inception
 2. **Configure environment**
 ```bash
 cp srcs/.env.example srcs/.env
-nano srcs/.env  # Edit with your values
+vim srcs/.env  # Edit with your values
 ```
 
 3. **Add domain to hosts file**
 ```bash
-sudo nano /etc/hosts
+sudo vim /etc/hosts
 # Add: 127.0.0.1 your-login.42.fr
 ```
 

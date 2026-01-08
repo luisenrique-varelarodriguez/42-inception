@@ -30,7 +30,7 @@ make --version
 2. **Create environment file:**
    ```bash
    cp srcs/.env.example srcs/.env
-   nano srcs/.env
+   vim srcs/.env
    ```
 
 3. **Configure mandatory variables:**
@@ -41,7 +41,7 @@ make --version
 
 4. **Add domain to hosts file:**
    ```bash
-   sudo nano /etc/hosts
+   sudo vim /etc/hosts
    ```
    Add:
    ```
@@ -581,7 +581,7 @@ echo "✅ All services are healthy!"
 
 ```bash
 # Edit Dockerfile or scripts
-nano srcs/requirements/nginx/tools/script.sh
+vim srcs/requirements/nginx/tools/script.sh
 
 # Rebuild only changed service
 docker compose -f srcs/docker-compose.yml up -d --build nginx
